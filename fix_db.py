@@ -27,6 +27,10 @@ if(args.fw == "5.05"):
         value_format = """("%s", "%s", "%s", "/user/appmeta/%s", "2018-07-27 15:06:46.822", "0", "0", "5", "1", "100", "0", "151", "5", "1", "gd", "0", "0", "0", "0", NULL, NULL, NULL, "%d", "2018-07-27 15:06:46.802", "0", "game", NULL, "0", "0", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "0", NULL, NULL, NULL, NULL, NULL, "0", "0", NULL, "2018-07-27 15:06:46.757")"""
 elif(args.fw == "6.72"):
         value_format = """("%s", "%s", "%s", "/user/appmeta/%s", "2018-07-27 15:06:46.822", "0", "0", "5", "1", "100", "0", "151","5", "1", "gd", "0", "0", "0", "0",NULL, NULL, NULL, "%d", "2018-07-27 15:06:46.802", "0", "game", NULL, "0", "0", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "0", NULL,NULL, NULL, NULL, NULL, "0", "0", NULL, "2018-07-27 15:06:46.757","0","0","0","0","0",NULL)"""
+elif(args.fw == "6.72"):
+        value_format = """("%s", "%s", "%s", "/user/appmeta/%s", "2018-07-27 15:06:46.822", "0", "0", "5", "1", "100", "0", "151","5", "1", "gd", "0", "0", "0", "0",NULL, NULL, NULL, "%d", "2018-07-27 15:06:46.802", "0", "game", NULL, "0", "0", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "0", NULL,NULL, NULL, NULL, NULL, "0", "0", NULL, "2018-07-27 15:06:46.757","0","0","0","0","0",NULL)"""
+elif(args.fw == "9.60"):
+        value_format = """("%s", "%s", "%s", "/user/appmeta/%s", "2018-07-27 15:06:46.822", "0", "0", "5", "1", "100", "0", "151","5", "1", "gd", "0", "0", "0", "0",NULL, NULL, NULL, "%d", "2018-07-27 15:06:46.802", "0", "game", NULL, "0", "0", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "0", NULL,NULL, NULL, NULL, NULL, "0", "0", NULL, "2018-07-27 15:06:46.757","0","0","0","0","0",NULL,"0")"""
 else:
         value_format = """("%s", "%s", "%s", "/user/appmeta/%s", "2018-07-27 15:06:46.822", "0", "0", "5", "1", "100", "0", "151","5", "1", "gd", "0", "0", "0", "0",NULL, NULL, NULL, "%d", "2018-07-27 15:06:46.802", "0", "game", NULL, "0", "0", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "0", NULL,NULL, NULL, NULL, NULL, "0", "0", NULL, "2018-07-27 15:06:46.757","0","0","0","0","0",NULL)"""
 
@@ -80,6 +84,7 @@ ftp.retrbinary("RETR app.db" , lf.write)
 lf.close()
 
 conn = sqlite3.connect(app_db)
+print(app_db)
 
 cursor = conn.cursor()
 cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'tbl_appbrowse_%%';")
@@ -98,12 +103,12 @@ for tbl in tables :
                 print(" Processing GameID: %s... " % GameID, end='')
                 cusa = get_game_info_by_id(GameID)
                 if(cusa.is_usable == True) :
+                        print((cusa.sfo['TITLE_ID'], cusa.sfo['CONTENT_ID'], cusa.sfo['TITLE'], cusa.sfo['TITLE_ID'], cusa.size))
                         sql_list.append(value_format
                                 % (cusa.sfo['TITLE_ID'], cusa.sfo['CONTENT_ID'], cusa.sfo['TITLE'], cusa.sfo['TITLE_ID'], cusa.size))
                         print("Completed %d" % cusa.size)
                 else :
                         print("Ignoring")
-
         if(len(sql_list) > 0) :
                 cursor.execute("INSERT INTO %s VALUES %s;" % (tbl[0], ', '.join(sql_list)))
 
